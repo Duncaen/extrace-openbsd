@@ -169,6 +169,9 @@ main(int argc, char *argv[])
 
 	output = stdout;
 
+	if (pledge("exec stdio cpath wpath proc ps", NULL) == -1)
+		err(1, "pledge");
+
 	while ((opt = getopt(argc, argv, "deflo:p:qw")) != -1)
 		switch (opt) {
 		case 'd': show_cwd = 1; break;
@@ -187,6 +190,9 @@ main(int argc, char *argv[])
 		case 'w': /* obsoleted, ignore */; break;
 		default: goto usage;
 		}
+
+	if (pledge("exec stdio proc ps", NULL) == -1)
+		err(1, "pledge");
 
 	if (parent != 1 && optind != argc) {
 usage:
@@ -218,6 +224,9 @@ usage:
 		}
 	} 
 
+	if (pledge("stdio proc ps", NULL) == -1)
+		err(1, "pledge");
+
 	signal(SIGINT, SIG_IGN);
 	EV_SET(&kev[0], SIGINT, EVFILT_SIGNAL, EV_ADD, 0, 0, 0);
 	if (kevent(kq, kev, 1, 0, 0, 0) == -1)
@@ -240,6 +249,9 @@ usage:
 			err(1, "kevent");
 		free(kevp);
 	}
+
+	if (pledge("stdio ps", NULL) == -1)
+		err(1, "pledge");
 
 	while (!quit) {
 		n = kevent(kq, 0, 0, kev, 4, 0);
