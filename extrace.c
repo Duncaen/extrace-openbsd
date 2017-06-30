@@ -208,15 +208,11 @@ usage:
 		err(1, "kvm_open");
 
 	if (optind != argc) {
-		pid_t child;
-
-		parent = getpid();
-		signal(SIGCHLD, SIG_IGN);
 		EV_SET(&kev[0], SIGCHLD, EVFILT_SIGNAL, EV_ADD, 0, 0, 0);
 		if (kevent(kq, kev, 1, 0, 0, 0) == -1)
 			err(1, "kevent");
 
-		switch ((child = fork())) {
+		switch ((parent = fork())) {
 		case -1: err(1, "fork"); break;
 		case 0:
 			execvp(argv[optind], argv+optind);
@@ -260,7 +256,7 @@ usage:
 			switch (ke->filter) {
 			case EVFILT_SIGNAL:
 				if (ke->ident == SIGCHLD)
-					while (waitpid(-1, NULL, WNOHANG) > 0)
+					while (waitpid(-1, 0, WNOHANG) > 0)
 						;
 				quit = 1;
 				break;
