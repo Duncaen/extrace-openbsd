@@ -1,0 +1,49 @@
+EXTRACE(1)                  General Commands Manual                 EXTRACE(1)
+
+NAME
+     extrace – trace exec() calls system-wide
+
+SYNOPSIS
+     extrace [-deflq] [-o file] [-p pid | cmd ...]
+
+DESCRIPTION
+     extrace traces all program executions occurring on a system.
+
+     The options are as follows:
+
+     -d      Print the current working directory of the new process.
+
+     -e      Print environment of process, or ‘-’ if unreadable.
+
+     -f      Generate flat output without indentation.  By default, the line
+             indentation reflects the process hierarchy.
+
+     -l      Resolve full path of the executable.  By default, argv[0] is
+             shown.
+
+     -q      Suppress printing of exec(3) arguments.
+
+     -o file
+             Redirect trace output to file.
+
+     -p pid  Only trace exec(3) calls descendant of pid.
+
+     cmd ...
+             Run cmd ... and only trace descendants of this command.
+
+             By default, all exec(3) calls are traced globally.
+
+EXIT STATUS
+     The extrace utility exits 0 on success, and >0 if an error occurs.
+
+SEE ALSO
+     fatrace(1), ktrace(1), ps(1), pwait(1)
+
+AUTHORS
+     Leah Neukirchen <leah@vuxu.org>
+     Duncan Overbruck <mail@duncano.de>
+
+LICENSE
+     extrace is licensed under the terms of the GPLv2.
+
+OpenBSD                          June 30, 2017                         OpenBSD
