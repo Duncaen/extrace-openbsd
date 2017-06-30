@@ -14,6 +14,7 @@
  * Copyright (c) 2014-2016 Leah Neukirchen <leah@vuxu.org>
  * Copyright (c) 2017 Duncan Overbruck <mail@duncano.de>
  */
+#include <sys/types.h>
 #include <sys/event.h>
 #include <sys/param.h>
 #include <sys/sysctl.h>
