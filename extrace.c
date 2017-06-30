@@ -16,6 +16,7 @@
  *
  */
 
+#include <err.h>
 #include <kvm.h>
 #include <signal.h>
 #include <stdio.h>
@@ -32,13 +33,12 @@ static kvm_t *kd;
 static int kq;
 static pid_t parent = 1;
 static int flat = 0;
-static int run = 0;
 static int full_path = 0;
 static int show_args = 1;
 static int show_cwd = 0;
 static int show_env = 0;
 static FILE *output;
-static quit = 0;
+static int quit = 0;
 
 static int
 pid_depth(pid_t pid)
@@ -106,15 +106,15 @@ handle_msg(pid_t pid)
 	fprintf(output, "%d ", pid);
 
 	if (show_cwd) {
-		int name[] = { CTL_KERN, KERN_PROC_CWD, pid };
+		int name[] = { CTL_KERN, KERN_PROC_CWD, 0 };
 		size_t cwdlen = sizeof cwd;
+		name[2] = pid;
 		if (sysctl(name, 3, cwd, &cwdlen, 0, 0) != 0)
 			*cwd = '\0';
 		print_shquoted(cwd);
 		fprintf(output, " %% ");
 	}
 
-	char **argvp;
 	kp = kvm_getprocs(kd, KERN_PROC_PID, pid, sizeof (struct kinfo_proc), &n);
 	if (!kp)
 		errx(1, "kvm_getprocs");
@@ -165,6 +165,7 @@ handle_msg(pid_t pid)
 int
 main(int argc, char *argv[])
 {
+	struct kevent kev[4];
 	int opt, i, n;
 
 	output = stdout;
@@ -193,8 +194,6 @@ usage:
 		fprintf(stderr, "Usage: extrace [-deflq] [-o FILE] [-p PID|CMD...]\n");
 		exit(1);
 	}
-
-	struct kevent kev[4];
 
 	if ((kq = kqueue()) == -1)
 		err(1, "kqueue");
