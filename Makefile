@@ -1,6 +1,7 @@
 ALL=extrace
 
 CFLAGS=-g -O2 -Wall -Wno-switch -Wextra -Wwrite-strings -pedantic -ansi
+LDFLAGS=-lkvm
 
 DESTDIR=
 PREFIX=/usr/local
