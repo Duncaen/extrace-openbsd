@@ -14,6 +14,10 @@
  * Copyright (c) 2014-2016 Leah Neukirchen <leah@vuxu.org>
  * Copyright (c) 2017 Duncan Overbruck <mail@duncano.de>
  */
+#include <sys/event.h>
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#include <sys/wait.h>
 
 #include <err.h>
 #include <kvm.h>
@@ -23,20 +27,16 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <sys/event.h>
-#include <sys/param.h>
-#include <sys/sysctl.h>
-#include <sys/wait.h>
-
-static kvm_t *kd;
-static int kq;
+static FILE *output;
 static pid_t parent = 1;
 static int flat = 0;
 static int full_path = 0;
 static int show_args = 1;
 static int show_cwd = 0;
 static int show_env = 0;
-static FILE *output;
+
+static kvm_t *kd;
+static int kq;
 static int quit = 0;
 
 static int
@@ -181,12 +181,12 @@ main(int argc, char *argv[])
 		case 'p': parent = atoi(optarg); break;
 		case 'q': show_args = 0; break;
 		case 'o':
-			  output = fopen(optarg, "w");
-			  if (!output) {
+			output = fopen(optarg, "w");
+			if (!output) {
 				  perror("fopen");
 				  exit(1);
-			  }
-			  break;
+			}
+			break;
 		case 'w': /* obsoleted, ignore */; break;
 		default: goto usage;
 		}
@@ -267,7 +267,7 @@ usage:
 			if (quit)
 				break;
 		}
-  	}
+	}
 
-  return 0;
+	return 0;
 }
