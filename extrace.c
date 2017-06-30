@@ -13,7 +13,6 @@
  *
  * Copyright (c) 2014-2016 Leah Neukirchen <leah@vuxu.org>
  * Copyright (c) 2017 Duncan Overbruck <mail@duncano.de>
- *
  */
 
 #include <err.h>
