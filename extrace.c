@@ -235,16 +235,16 @@ usage:
 			err(1, "kevent");
 	} else {
 		struct kinfo_proc *kp;
-		struct kevent *kevp;
+		struct kevent *kevs = NULL;
 
 		kp = kvm_getprocs(kd, KERN_PROC_ALL, 0, sizeof (struct kinfo_proc), &n);
-		if (!(kevp = calloc(sizeof (struct kevent), n)))
+		if ((kevs = calloc(n, sizeof (struct kevent))) == NULL)
 			err(1, "calloc");
 		for (i = 0; i < n; i++)
-			EV_SET(&kevp[i], kp[i].p_pid, EVFILT_PROC, EV_ADD, NOTE_EXEC | NOTE_TRACK, 0, 0);
-		if (kevent(kq, kevp, n, 0, 0, 0) == -1)
+			EV_SET(&kevs[i], kp[i].p_pid, EVFILT_PROC, EV_ADD, NOTE_EXEC | NOTE_TRACK, 0, 0);
+		if (kevent(kq, kevs, n, 0, 0, 0) == -1)
 			err(1, "kevent");
-		free(kevp);
+		free(kevs);
 	}
 
 	if (pledge("stdio ps", NULL) == -1)
